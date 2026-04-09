@@ -98,7 +98,34 @@ def get_razorpay_docs(
 
 
 def main() -> None:
-    mcp.run(transport="stdio")
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="Razorpay Docs MCP server",
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
+    )
+    parser.add_argument(
+        "--transport",
+        choices=["stdio", "http"],
+        default="stdio",
+        help="Transport to use: 'stdio' for local tools (Claude Desktop, Cursor), "
+             "'http' for web-based AI clients (claude.ai, ChatGPT)",
+    )
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to listen on (only used with --transport http)",
+    )
+    args = parser.parse_args()
+
+    if args.transport == "http":
+        # Override host/port on the already-constructed FastMCP settings object
+        mcp.settings.host = "0.0.0.0"
+        mcp.settings.port = args.port
+        mcp.run(transport="sse")
+    else:
+        mcp.run(transport="stdio")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python -m razorpay_docs_mcp.server --transport http --port 8000

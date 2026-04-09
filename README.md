@@ -122,6 +122,12 @@ Indexing …
 
 ## Register with your AI coding agent
 
+All clients use the same JSON config format — only the config file location differs.
+
+After registering, restart the app. The tools `search_razorpay_docs` and `get_razorpay_docs` will appear in the agent's tool list.
+
+---
+
 ### Claude Desktop
 
 `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
@@ -139,6 +145,8 @@ Indexing …
 }
 ```
 
+---
+
 ### Claude Code
 
 Create `.mcp.json` in your project root:
@@ -155,11 +163,128 @@ Create `.mcp.json` in your project root:
 }
 ```
 
+---
+
 ### Cursor
 
-Settings → MCP → Add server → paste the same JSON block above.
+Global config: `~/.cursor/mcp.json`
+Project-level config: `.cursor/mcp.json` in your project root (takes precedence over global)
 
-After adding, restart the app. The tools `search_razorpay_docs` and `get_razorpay_docs` will appear in the agent's tool list.
+```json
+{
+  "mcpServers": {
+    "razorpay-docs": {
+      "command": "python",
+      "args": ["-m", "razorpay_docs_mcp.server"],
+      "cwd": "/absolute/path/to/razorpay_docs_mcp"
+    }
+  }
+}
+```
+
+---
+
+### Windsurf
+
+`~/.codeium/windsurf/mcp_config.json`
+
+```json
+{
+  "mcpServers": {
+    "razorpay-docs": {
+      "command": "python",
+      "args": ["-m", "razorpay_docs_mcp.server"],
+      "cwd": "/absolute/path/to/razorpay_docs_mcp"
+    }
+  }
+}
+```
+
+---
+
+### VS Code with Cline
+
+Cline stores MCP servers in your VS Code `settings.json` under the `"cline.mcpServers"` key.
+
+Open VS Code settings (`Ctrl+Shift+P` → "Open User Settings (JSON)") and add:
+
+```json
+{
+  "cline.mcpServers": {
+    "razorpay-docs": {
+      "command": "python",
+      "args": ["-m", "razorpay_docs_mcp.server"],
+      "cwd": "/absolute/path/to/razorpay_docs_mcp"
+    }
+  }
+}
+```
+
+---
+
+### Continue (VS Code / JetBrains)
+
+`~/.continue/config.json`
+
+Add an entry to the `"mcpServers"` array:
+
+```json
+{
+  "mcpServers": [
+    {
+      "name": "razorpay-docs",
+      "command": "python",
+      "args": ["-m", "razorpay_docs_mcp.server"],
+      "cwd": "/absolute/path/to/razorpay_docs_mcp"
+    }
+  ]
+}
+```
+
+---
+
+## Register with HTTP clients (remote transport)
+
+These clients connect over HTTP/SSE instead of stdio. You must first start the server in HTTP mode:
+
+```bash
+python -m razorpay_docs_mcp.server --transport http
+```
+
+This starts the MCP server on port 8000. The SSE endpoint is `http://localhost:8000/sse`.
+
+---
+
+### Claude.ai
+
+Claude.ai supports connecting to external MCP servers via its integrations settings.
+
+1. Go to [claude.ai](https://claude.ai) → Settings → Integrations
+2. Click "Add custom integration"
+3. Paste your MCP server URL: `http://localhost:8000/sse` (for local) or your deployed HTTPS URL
+
+> **Note:** claude.ai requires HTTPS for publicly deployed servers. For local development, the Claude Desktop app (stdio config above) is the simpler option since it does not require running a separate HTTP server.
+
+---
+
+### ChatGPT Desktop
+
+The ChatGPT desktop app (macOS and Windows) supports MCP via local stdio. The ChatGPT web app does not natively support MCP as of April 2026.
+
+macOS: `~/Library/Application Support/OpenAI/ChatGPT/mcp.json`
+Windows: `%APPDATA%\OpenAI\ChatGPT\mcp.json`
+
+```json
+{
+  "mcpServers": {
+    "razorpay-docs": {
+      "command": "python",
+      "args": ["-m", "razorpay_docs_mcp.server"],
+      "cwd": "/absolute/path/to/razorpay_docs_mcp"
+    }
+  }
+}
+```
 
 ---
 
@@ -203,7 +328,7 @@ razorpay.com/docs/llms.txt
         │  chunks table — chunk_id, content, heading_path
         │  BM25 FTS index over chunks
         ▼
-   server.py  (stdio MCP, FastMCP)
+   server.py  (FastMCP — stdio or HTTP/SSE)
         │
         ├── search_razorpay_docs(query, product?, limit?)
         │       BM25 search → top N chunks → snippets + URLs

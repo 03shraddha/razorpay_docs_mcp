@@ -1,0 +1,12 @@
+services:
+  mcp:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      # Persist the DuckDB file across container restarts.
+      # Run the ingest step once before starting:
+      #   docker compose run --rm mcp python -m razorpay_docs_mcp.refresh
+      - ./data:/app/data
+    environment:
+      PYTHONUNBUFFERED: "1"
