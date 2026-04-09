@@ -1,0 +1,20 @@
+[project]
+name = "razorpay-docs-mcp"
+version = "0.1.0"
+requires-python = ">=3.11"
+dependencies = [
+    "mcp",
+    "duckdb",
+    "httpx",
+]
+
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["razorpay_docs_mcp*"]
+
+[project.optional-dependencies]
+dev = ["pytest", "pytest-asyncio"]

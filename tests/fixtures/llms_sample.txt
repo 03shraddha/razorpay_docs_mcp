@@ -1,0 +1,13 @@
+# Razorpay
+
+Sample fixture for tests — 5 real links from https://razorpay.com/docs/llms.txt (fetched 2026-04-09).
+
+## Quick Start
+
+Essential documentation for getting started with Razorpay:
+
+- [Razorpay API Documentation](https://raw.githubusercontent.com/razorpay/markdown-docs/master/api.md): Get started with Razorpay APIs and test them on Postman. Generate API Keys in Test and Live Modes.
+- [About Errors](https://raw.githubusercontent.com/razorpay/markdown-docs/master/errors.md): Check the errors returned in the API responses and understand how to handle them.
+- [Razorpay Payments Suite](https://raw.githubusercontent.com/razorpay/markdown-docs/master/payments.md): Explore Razorpay Payment Gateway and related products for accepting payments online and offline.
+- [About Webhooks](https://raw.githubusercontent.com/razorpay/markdown-docs/master/webhooks.md): Use webhooks to get notified about events related to your Razorpay payments.
+- [RazorpayX - Get Started](https://raw.githubusercontent.com/razorpay/markdown-docs/master/x.md): Create a RazorpayX account to explore seamless banking solutions.
