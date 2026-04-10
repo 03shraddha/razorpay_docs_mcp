@@ -9,8 +9,6 @@ def get_connection(path: str) -> duckdb.DuckDBPyConnection:
     """Open or create the DuckDB database, install FTS, and ensure schema exists."""
     conn = duckdb.connect(path)
 
-    # Install and load the FTS extension (no-op if already installed)
-    conn.execute("INSTALL fts")
     conn.execute("LOAD fts")
 
     # Docs table: one row per document from llms.txt

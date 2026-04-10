@@ -23,8 +23,16 @@ mcp = FastMCP(
     ),
 )
 
-# Open the DuckDB connection once at module load (reused across all tool calls)
-_conn = get_connection(_DB_PATH)
+# Connection is opened lazily on first tool call so the server can complete
+# the MCP handshake before any slow DB/extension initialisation runs.
+_conn = None
+
+
+def _get_conn():
+    global _conn
+    if _conn is None:
+        _conn = get_connection(_DB_PATH)
+    return _conn
 
 
 @mcp.tool()
@@ -49,7 +57,7 @@ def search_razorpay_docs(
 
     Returns a ranked list of matching doc chunks with snippets and source URLs.
     """
-    hits = search(_conn, query, product, limit)
+    hits = search(_get_conn(), query, product, limit)
     return {
         "results": [
             {
@@ -82,7 +90,7 @@ def get_razorpay_docs(
     Pass canonical razorpay.com/docs/... URLs (from search results).
     Returns full markdown for each found URL and a list of any not found.
     """
-    found, not_found = fetch_full(_conn, urls[:20])
+    found, not_found = fetch_full(_get_conn(), urls[:20])
     return {
         "documents": [
             {
